@@ -1,0 +1,9 @@
+#!/bin/bash
+
+echo "Creating a user 'developer' with the permissions of user $usr_id."
+echo
+
+docker stop darthtrader_mac
+docker container rm darthtrader_mac
+docker build -t dt:darthtrader_mac "$(pwd)/$(dirname $0)"
+docker create --name darthtrader_mac -it -v "$(pwd)/$(dirname $0)/../../":/home/DarthTrader dt:darthtrader_mac

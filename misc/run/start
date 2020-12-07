@@ -1,0 +1,4 @@
+#!/bin/bash
+
+docker start darthtrader_mac
+docker run -it --rm --name DarthTrader -v "$(pwd)/$(dirname $0)/../../":/home/DarthTrader -w /home/DarthTrader python:3 python src/darthTrader.py

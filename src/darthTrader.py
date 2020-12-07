@@ -57,10 +57,10 @@ def requestPOST(method, request):
     return res
 
 def generateSignature(method,params, ID):
-    API_KEY = "gH9rDJUgonXNHWiRc1Z8wH"
-    f = open('DarthTrader.txt', 'r')
+    f = open('../userData/api.txt', 'r')
     l1 = f.readline()
     l2 = f.readline()
+    API_KEY = l1.split()[1].strip()
     SECRET_KEY = l2.split()[1].strip()
     # First ensure the params are alphabetically sorted by key
     request = {
@@ -227,8 +227,6 @@ def getOpenOderStatus(ID, instrument_name):
     openOrders = res.json()['result']['order_list'][0]
     return openOrders['status']
 
-
-
 def getOderHistory(ID, instrument_name=None, start_ts=None, end_ts=None, page_size=None, page=None):
     method = 'private/get-order-history'
     params = {}
@@ -267,81 +265,7 @@ def PRINTLOGO():
 def printDataPair(name, data):
     print("-> "+name + str(data))
 
-
-class Wallet:
-    """This is the wallet"""
-
-    def __init__(self):
-        res = getAccountSummary(ID=0)
-        summary = res.json()['result']['accounts']
-        acc = {}
-        for token in summary:
-            coin = token['currency']
-            del token['currency']
-            acc[coin] = token
-        self.account = acc
-
-    def update(self):
-        res = getAccountSummary(ID=0)
-        summary = res.json()['result']['accounts']
-        acc = {}
-        for token in summary:
-            coin = token['currency']
-            del token['currency']
-            acc[coin] = token
-        self.account = acc
-
-    def getBalance(self, coin):
-        return self.account[coin]['balance']
-
-    def getAvailable(self, coin):
-        return self.account[coin]['available']
-
-    def getOrder(self, coin):
-        return self.account[coin]['order']
-
-    def getStake(self, coin):
-        return self.account[coin]['stake']
-
-    def printCoinStatement(self, coin):
-        print('Wallet statement: ' + coin)
-        printDataPair('Balance:   ', myWallet.getBalance(coin))
-        printDataPair('Available: ', myWallet.getAvailable(coin))
-        printDataPair('Order:     ', myWallet.getOrder(coin))
-        printDataPair('Stake:     ', myWallet.getStake(coin))
-        print('')
-
-
-    def placeLimitBuyOrder(self, ID, instrument_name, price, quantity, oid=None):
-        side = 'BUY'
-        orderType = 'LIMIT'
-        return createOrder(ID=ID, instrument_name=instrument_name, side=side, orderType=orderType, price=price, quantity=quantity, client_oid=oid)
-
-    def placeLimitSellOrder(self, ID, instrument_name, price, quantity, oid=None):
-        side = 'SELL'
-        orderType = 'LIMIT'
-        return createOrder(ID=ID, instrument_name=instrument_name, side=side, orderType=orderType, price=price, quantity=quantity, client_oid=oid)
-
-
-if __name__ == "__main__":
-    #----------------------------------------#
-    # Some data to define by the user:       #
-    #----------------------------------------#
-    # the instrument name
-    instrument = "DAI_CRO"
-    # the cost that should be covered by a buy/sell order [main coin value], e.g. 0.0008 Cro
-    min_trading_cost = 0.0
-    # maximum trading duration [s]
-    max_trading_duration = 24*3600
-    # intitial trading quantity of the main coin
-    mainInitTradingQuantity = 100
-    # set maximum price for initial buy
-    maxInitPrice = 5.6
-    # do we have to buy the trade currency first?
-    buyFirst = True
-
-    ## currently always assuming that we buy first!!!!
-
+def run(instrument, buyFirst, mainInitTradingQuantity, max_trading_duration):
     #----------------------------------------#
     # Initializing the bot...                #
     #----------------------------------------#
@@ -404,11 +328,11 @@ if __name__ == "__main__":
     # res = getOpenOders(ID=orderID, instrument_name=instrument)
     # sys.exit() 
     #######################
-
     print("")
     printDataPair('Starting time (UTC): ', datetime.utcfromtimestamp(int(round(t_start/1000.0))).strftime('%Y-%m-%d %H:%M:%S'))
     print("Run Darth Trader! Run!")
     print("")
+    sys.exit()
     # start time loop
     while(t_current <= t_end):
         printDataPair("Time running [h]:     ",(t_current - t_start)/1000.0/3600.0)
@@ -520,3 +444,85 @@ if __name__ == "__main__":
         time.sleep(.5)
         t_current = time.time()*1000
     print('finished trading...')
+
+class Wallet:
+    """This is the wallet"""
+
+    def __init__(self):
+        res = getAccountSummary(ID=0)
+        summary = res.json()['result']['accounts']
+        acc = {}
+        for token in summary:
+            coin = token['currency']
+            del token['currency']
+            acc[coin] = token
+        self.account = acc
+
+    def update(self):
+        res = getAccountSummary(ID=0)
+        summary = res.json()['result']['accounts']
+        acc = {}
+        for token in summary:
+            coin = token['currency']
+            del token['currency']
+            acc[coin] = token
+        self.account = acc
+
+    def getBalance(self, coin):
+        return self.account[coin]['balance']
+
+    def getAvailable(self, coin):
+        return self.account[coin]['available']
+
+    def getOrder(self, coin):
+        return self.account[coin]['order']
+
+    def getStake(self, coin):
+        return self.account[coin]['stake']
+
+    def printCoinStatement(self, coin):
+        print('Wallet statement: ' + coin)
+        printDataPair('Balance:   ', myWallet.getBalance(coin))
+        printDataPair('Available: ', myWallet.getAvailable(coin))
+        printDataPair('Order:     ', myWallet.getOrder(coin))
+        printDataPair('Stake:     ', myWallet.getStake(coin))
+        print('')
+
+
+    def placeLimitBuyOrder(self, ID, instrument_name, price, quantity, oid=None):
+        side = 'BUY'
+        orderType = 'LIMIT'
+        return createOrder(ID=ID, instrument_name=instrument_name, side=side, orderType=orderType, price=price, quantity=quantity, client_oid=oid)
+
+    def placeLimitSellOrder(self, ID, instrument_name, price, quantity, oid=None):
+        side = 'SELL'
+        orderType = 'LIMIT'
+        return createOrder(ID=ID, instrument_name=instrument_name, side=side, orderType=orderType, price=price, quantity=quantity, client_oid=oid)
+
+
+if __name__ == "__main__":
+    #----------------------------------------#
+    # Some data to define by the user:       #
+    #----------------------------------------#
+    # the instrument name
+    instrument = "DAI_CRO"
+    # the cost that should be covered by a buy/sell order [main coin value], e.g. 0.0008 Cro
+    min_trading_cost = 0.0
+    # maximum trading duration [s]
+    max_trading_duration = 24*3600
+    # intitial trading quantity of the main coin
+    mainInitTradingQuantity = 100
+    # set maximum price for initial buy
+    maxInitPrice = 5.6
+    # do we have to buy the trade currency first?
+    ## currently always assuming that we buy first!!!!
+    buyFirst = True
+
+    # run this shit
+    # run(instrument=instrument,buyFirst=buyFirst,mainInitTradingQuantity=mainInitTradingQuantity,max_trading_duration=max_trading_duration)
+
+    # SANDBOX
+    myWallet = Wallet()
+    balDot = myWallet.getBalance('DOT')
+    print(balDot)
+
