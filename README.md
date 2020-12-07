@@ -1,2 +1,4 @@
 # DarthTrader
-crispy-bot
+crispy-bot for crispy stuff
+
+further info will follow...
