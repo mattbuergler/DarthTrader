@@ -43,10 +43,17 @@ pip install requests numpy
 
 ```graphql
 .
-├── darth_trader.py           # Main script containing all logic & classes
-├── README.md                 # This file
-└── userData
-    └── api.txt              # Your API credentials (NOT committed to Git)
+├── misc
+│   └── run
+│       ├── Dockerfile       # Docker configuration for containerizing the app
+│       ├── recreate.sh      # Script to rebuild or recreate Docker containers
+│       └── start.sh         # Script to start the Docker container/application
+├── src
+│   └── darthTrader.py      # Main Python trading script
+├── userData
+│   └── api_template.txt    # Template file for API credentials (rename to api.txt for actual use)
+├── .gitignore               # Specifies intentionally untracked files (e.g., secrets)
+└── README.md                # Main project documentation
 ```
 
 > **Note**: The code references an `api.txt` file in `../userData/api.txt`.  
